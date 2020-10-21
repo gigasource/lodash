@@ -2,6 +2,7 @@ var assignValue = require('./_assignValue'),
     castPath = require('./_castPath'),
     isIndex = require('./_isIndex'),
     isObject = require('./isObject'),
+    find = require('./find'),
     toKey = require('./_toKey');
 
 /**
@@ -26,24 +27,46 @@ function baseSet(object, path, value, customizer) {
       nested = object;
 
   while (nested != null && ++index < length) {
-    var key = toKey(path[index]),
+    var selector = toKey(path[index]),
         newValue = value;
 
-    if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+    if (selector === '__proto__' || selector === 'constructor' || selector === 'prototype') {
       return object;
     }
 
+    if (index === 0 && Array.isArray(nested)) {
+      var regexMatchResult = selector.match(/\(([^)]+)\)/);
+      var conditionSelector = regexMatchResult && regexMatchResult[1];
+
+      if (conditionSelector && conditionSelector.includes(':')) {
+        var [key, val] = conditionSelector.split(':');
+        val = isNaN(val) ? val.replace(/["']/g, '') : +val;
+
+        var findResult = find(nested, {[key]: val})
+
+        if (findResult) {
+          nested = findResult;
+        } else {
+          var newObj = {[key]: val};
+          nested.push(newObj);
+          nested = newObj;
+        }
+
+        continue;
+      }
+    }
+
     if (index != lastIndex) {
-      var objValue = nested[key];
-      newValue = customizer ? customizer(objValue, key, nested) : undefined;
+      var objValue = nested[selector];
+      newValue = customizer ? customizer(objValue, selector, nested) : undefined;
       if (newValue === undefined) {
         newValue = isObject(objValue)
           ? objValue
           : (isIndex(path[index + 1]) ? [] : {});
       }
     }
-    assignValue(nested, key, newValue);
-    nested = nested[key];
+    assignValue(nested, selector, newValue);
+    nested = nested[selector];
   }
   return object;
 }
