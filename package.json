@@ -1,6 +1,6 @@
 {
-  "name": "@gigasource/lodash",
-  "version": "0.0.1",
+  "name": "lodash",
+  "version": "4.17.20",
   "description": "Lodash modular utilities.",
   "keywords": "modules, stdlib, util",
   "homepage": "https://lodash.com/",
