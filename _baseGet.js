@@ -18,7 +18,7 @@ function baseGet(object, path) {
 
   while (object != null && index < length) {
     var selector = path[index++];
-    var regexMatchResult = selector.match(/\(([^)]+)\)/);
+    var regexMatchResult = typeof selector === 'string' && selector.match(/\(([^)]+)\)/);
     var conditionSelector = regexMatchResult && regexMatchResult[1];
 
     if (conditionSelector && conditionSelector.includes(':')) {

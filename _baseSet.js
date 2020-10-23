@@ -35,7 +35,7 @@ function baseSet(object, path, value, customizer) {
     }
 
     if (index === 0 && Array.isArray(nested)) {
-      var regexMatchResult = selector.match(/\(([^)]+)\)/);
+      var regexMatchResult = typeof selector === 'string' && selector.match(/\(([^)]+)\)/);
       var conditionSelector = regexMatchResult && regexMatchResult[1];
 
       if (conditionSelector && conditionSelector.includes(':')) {
